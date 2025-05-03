@@ -1,0 +1,30 @@
+Chasis number: 2
+Make: g
+Model: f
+Year: 43
+Cost: 23.00
+Value: 21.00
+Mileage: 654
+Next service: 65
+Owner: tg
+Owner email: ht
+Breakdowns: Never: 0.00
+Breakdowns: Less than 3 times: 50.00
+Breakdowns: Less than 5 times: 0.00
+Breakdowns: More than 5 times: 50.00
+----------------------------------------------
+Chasis number: 1
+Make: r
+Model: e
+Year: 12
+Cost: 123.00
+Value: 321.00
+Mileage: 1
+Next service: 2
+Owner: g
+Owner email: g
+Breakdowns: Never: 0.00
+Breakdowns: Less than 3 times: 50.00
+Breakdowns: Less than 5 times: 0.00
+Breakdowns: More than 5 times: 50.00
+----------------------------------------------

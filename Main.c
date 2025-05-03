@@ -2,6 +2,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <conio.h>
+#include <ctype.h>
+#include <stdbool.h>
+
+float Never_Stat;
+float Less_3_Stat;
+float Less_5_Stat;
+float More_5_Stat;
 
 typedef struct machine
 {
@@ -19,6 +27,13 @@ typedef struct machine
     int breakdowns;
     struct machine* NEXT; 
 } machineT;
+
+typedef struct credentials {
+    char username[7];
+    char password[7];
+}credT;
+
+
 
 void openFile(machineT** headPtr)
 {
@@ -41,7 +56,7 @@ void openFile(machineT** headPtr)
     while (fgets(line, sizeof(line), filePtr) != NULL) 
     {
         machineT* newNode = (machineT*)malloc(sizeof(machineT));
-        if (newNode == NULL) {// Ruh Roh
+        if (newNode == NULL) {
             printf("Memory allocation failed!\n");
             continue;
         }
@@ -66,6 +81,8 @@ void openFile(machineT** headPtr)
 
     fclose(filePtr);
 }
+
+
 
 // Function to save data to file
 void saveToFile(machineT* headPtr)
@@ -93,6 +110,8 @@ void saveToFile(machineT* headPtr)
     fclose(filePtr);
     printf("Data saved to fleet.txt\n");
 }
+
+
 
 // Helper function to display a machine's details
 void displayMachine(machineT* machine)
@@ -143,9 +162,11 @@ void displayMachine(machineT* machine)
     }
     printf("----------------------------------------------\n");
 }
+
+
+// Function to generate statistics
 void generateStats(machineT* machine)
 {
-	// Placeholder for generating machine statistics
 	int breakdownCount1 = 0;
 	int breakdownCount2 = 0;
 	int breakdownCount3 = 0;
@@ -178,13 +199,20 @@ void generateStats(machineT* machine)
         }
 		temp = temp->NEXT;
     }
+	Never_Stat = (float)breakdownCount1 / overallCount * 100;
+	Less_3_Stat = (float)breakdownCount2 / overallCount * 100;
+	Less_5_Stat = (float)breakdownCount3 / overallCount * 100;
+	More_5_Stat = (float)breakdownCount4 / overallCount * 100;
 	printf("Total machines: %d\n", overallCount);
-	printf("Breakdown percentage: Never: %.2f\n", (float)breakdownCount1 / overallCount * 100);
-	printf("Breakdown percentage: Less than 3 times: %.2f\n", (float)breakdownCount2 / overallCount * 100);
-	printf("Breakdown percentage: Less than 5 times: %.2f\n", (float)breakdownCount3 / overallCount * 100);
-	printf("Breakdown percentage: More than 5 times: %.2f\n", (float)breakdownCount4 / overallCount * 100);
+	printf("Breakdown percentage: Never: %.2f\n", Never_Stat);
+	printf("Breakdown percentage: Less than 3 times: %.2f\n", Less_3_Stat);
+	printf("Breakdown percentage: Less than 5 times: %.2f\n", Less_5_Stat);
+	printf("Breakdown percentage: More than 5 times: %.2f\n", More_5_Stat);
 	printf("--------------------------------------------------\n");
 }
+
+
+
 void deleteMachine(char chasisnumber[], machineT** headPtr)
 {
     machineT* temp = *headPtr; 
@@ -203,7 +231,7 @@ void deleteMachine(char chasisnumber[], machineT** headPtr)
         *headPtr = temp->NEXT; 
         free(temp);
         printf("Machine with chasis number %s deleted successfully.\n", chasisnumber);
-        return; // Node deleted, exit function
+        return; 
     }
 
     // Traverse the rest of the list
@@ -217,7 +245,7 @@ void deleteMachine(char chasisnumber[], machineT** headPtr)
             prevTemp->NEXT = temp->NEXT; // Bypass the node to be deleted
             free(temp);
             printf("Machine with chasis number %s deleted successfully.\n", chasisnumber);
-            return; // Node deleted, exit function
+            return; 
         }
         prevTemp = temp;
         temp = temp->NEXT;
@@ -226,6 +254,90 @@ void deleteMachine(char chasisnumber[], machineT** headPtr)
     // If the loop finishes, the node was not found
     printf("Machine with chasis number %s not found.\n", chasisnumber);
 }
+
+void hidePassword(char* password, int maxlength)
+{
+    int i = 0;
+    char ch;
+    while (1) {
+        ch = _getch(); // Changed to _getch()
+        if (ch == 13) { // If Enter key is pressed
+            password[i] = '\0';
+            break;
+        }
+        else if (ch == 8) { // If Backspace key is pressed
+            if (i > 0) {
+                i--;
+                printf("\b \b");
+            }
+        }
+        else if (i < 6) { // Check if within password size limit
+            password[i++] = ch;
+            printf("*"); // Print asterisk instead of the actual character
+        }
+    }
+}
+
+
+
+void logIn()
+{
+	char username[7];
+	char password[7];
+    char storedUserName[7];
+    char storedPassWord[7];
+	int attempts = 0;
+    credT* headPtr = NULL;
+	printf("Welcome to the Fleet Management System!\n");
+	printf("Please log in to continue.\n");
+    FILE* filePtr = fopen("login.txt", "r");
+	if (filePtr == NULL)
+	{
+		printf("Login file not found. Creating a new one...\n");
+		filePtr = fopen("login.txt", "w");
+        printf("NOTE: USERNAME AND PASSWORD ARE CAPPED AT 6 CHARACTERS\n\n");
+        printf("NOTE: Password unobscured for initial entry\n");
+		printf("Please enter a username: ");
+		scanf("%s", username);
+		printf("Please enter a password: ");
+		scanf("%s", password);
+		fprintf(filePtr, "%s %s", username, password);
+		fclose(filePtr);
+		return; // Exit after creating the file
+	}
+    headPtr = (credT*)malloc(sizeof(credT));
+    if (fscanf(filePtr, "%s %s", headPtr->username, headPtr->password) != 2)
+    {
+        printf("Error reading credentials from login file.\n");
+        fclose(filePtr);
+        free(headPtr); // Free allocated memory
+        exit(1);
+    }
+	while (attempts < 3)
+	{
+		printf("Enter username: ");
+		scanf("%s", username);
+		printf("Enter password: ");
+		hidePassword(password, 6);
+
+		if (strcmp(username, headPtr->username) == 0 && strcmp(password, headPtr->password) == 0)
+		{
+			printf("\nLogin successful!\n");
+			return;
+		}
+		else
+		{
+			printf("Invalid username or password. Try again.\n");
+			attempts++;
+		}
+	}
+
+	printf("Too many failed attempts. Exiting...\n");
+	exit(1);
+}
+
+
+
 
 int main() 
 {
@@ -238,8 +350,10 @@ int main()
     char check[20];
     char username[6];
     char password[6];
+    bool StatsGenerated = false; // Flag to check if stats have been generated
 
     openFile(&headPtr);
+	logIn(); // Call the login function
     do
     {
         printf("\n===== Fleet Management System =====\n");
@@ -258,13 +372,29 @@ int main()
         if (menuOption == 1)
         {
             newNode = (machineT*)malloc(sizeof(machineT));
+            bool isUnique = false;
             if (newNode == NULL) {
                 printf("Memory allocation failed!\n");
                 continue;
             }
 
-            printf("Please enter the chasis number\n");
+            printf("Please enter the chassis number\n");
             scanf("%s", newNode->chasisnumber);
+			//Loop to check if the chassis number is unique
+            do {
+                isUnique = true;
+                machineT* current = headPtr;
+
+                while (current != NULL) {
+                    if (strcmp(current->chasisnumber, newNode->chasisnumber) == 0) {
+                        isUnique = false;
+                        printf("Chassis number already exists. Please enter a different one.\n");
+                        scanf("%s", newNode->chasisnumber);
+                        break; // Exit the inner while loop to restart checking
+                    }
+                    current = current->NEXT;
+                }
+            } while (!isUnique);
 
             printf("Please enter the make\n");
             scanf("%s", newNode->make);
@@ -424,10 +554,12 @@ int main()
             }
         else if (menuOption == 6)
         {
+			StatsGenerated = true; // For checking if stats have been generated for the report
 			generateStats(headPtr);
 		}
-		else if (menuOption == 7) // Placeholder for report generation
+		else if (menuOption == 7)
 		{
+            temp = headPtr;
 			printf("Generating report...\n");
             FILE* filePtr = fopen("report.txt", "w");
             temp = headPtr;
@@ -444,21 +576,88 @@ int main()
 				fprintf(filePtr, "Next service: %d\n", temp->nextservice);
 				fprintf(filePtr, "Owner: %s\n", temp->owner);
 				fprintf(filePtr, "Owner email: %s\n", temp->owneremail);
+				if (StatsGenerated = true)
+				{
+					fprintf(filePtr, "Breakdowns: Never: %.2f\n", Never_Stat);
+					fprintf(filePtr, "Breakdowns: Less than 3 times: %.2f\n", Less_3_Stat);
+					fprintf(filePtr, "Breakdowns: Less than 5 times: %.2f\n", Less_5_Stat);
+					fprintf(filePtr, "Breakdowns: More than 5 times: %.2f\n", More_5_Stat);
+				}
 				fprintf(filePtr, "----------------------------------------------\n");
 				temp = temp->NEXT; 
             }
+            if (StatsGenerated == false)
+            {
+				printf("If you would like a report with statistics, please generate them first using menu option 6.\n");
+            }
+			printf("Report generated successfully! Check report.txt for details.\n");
 			fclose(filePtr);
 			}
-		else if (menuOption == 8) // Placeholder for sorting by value
+		else if (menuOption == 8) 
 		{
 			printf("Sorting machines by value...\n");
-			// Implement your logic here
-        }
-        else if (menuOption != -1)
-        {
-            printf("Feature not implemented yet.\n");
+            temp = headPtr;
+			machineT* sortedList = NULL;
+			int leastvaluable = 0;
+            int round = 1;
+			// Loop to sort the machines by value 
+			// This is to make sure the loop runs the same amount of times as the number of machines
+            while (temp != NULL)
+			{
+				machineT* currentNode = temp;
+				machineT* prevNode = NULL;
+				machineT* minNode = temp;
+				machineT* minPrev = NULL;
+				//Loop in a loop to find the minimum node
+				while (currentNode != NULL)
+				{
+                    //if the value of the current node is bigger than the minimum node this changes minNode to the currentNode
+                    if (currentNode->value < minNode->value)
+                    {
+					    minNode = currentNode;
+					    minPrev = prevNode;
+                    }
+				    prevNode = currentNode;
+				    currentNode = currentNode->NEXT;
+			    }
+				
+				//At the end of the loop the minimum node is the one with the least value
+                if (minPrev == NULL)
+                {
+                    temp = minNode->NEXT; 
+                }
+                else
+                {
+                    minPrev->NEXT = minNode->NEXT; // Link the node before minNode to the node after minNode
+                }
+                minNode->NEXT = NULL; // Detach the removed minNode from the original list
+
+				// Insert the minNode at the beginning of the sorted list
+                if (sortedList == NULL)
+                {
+					sortedList = minNode; 
+				}
+                else
+                {
+                    minNode->NEXT = sortedList; 
+                    sortedList = minNode; 
+                }
+
+            }
+
+			// Print the sorted list
+			printf("\n===== Machines Sorted by Value =====\n");
+            while (sortedList != NULL)
+            {
+                printf("Chasis number: %s Value:%.2f",sortedList->chasisnumber, sortedList->value);
+				sortedList = sortedList->NEXT;
+            }
+			printf("\n----------------------------------------------\n");
+			free(sortedList); 
+
         }
     } while (menuOption != -1);
+	// Save the data to file before exiting
      saveToFile(headPtr);
     // Free all memory before exiting
     temp = headPtr;
