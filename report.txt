@@ -1,0 +1,15 @@
+Chasis number: 1
+Make: Ford
+Model: F150
+Year: 2017
+Cost: 90.00
+Value: 100.00
+Mileage: 120
+Next service: 3
+Owner: John
+Owner email: Johnas
+Breakdowns: Never: 100.00
+Breakdowns: Less than 3 times: 0.00
+Breakdowns: Less than 5 times: 0.00
+Breakdowns: More than 5 times: 0.00
+----------------------------------------------

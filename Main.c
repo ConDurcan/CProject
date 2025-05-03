@@ -1,5 +1,6 @@
 //Conor Durcan - G00435598
 
+
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,10 +9,10 @@
 #include <ctype.h>
 #include <stdbool.h>
 
-float Never_Stat;
-float Less_3_Stat;
-float Less_5_Stat;
-float More_5_Stat;
+float Never_Stat = 0;
+float Less_3_Stat = 0;
+float Less_5_Stat = 0;
+float More_5_Stat = 0;
 
 typedef struct machine
 {
@@ -563,6 +564,7 @@ int main()
 		{
             temp = headPtr;
 			printf("Generating report...\n");
+			printf("Note: The report will only include correct statistics if they have been generated just before creating the report.\n");
             FILE* filePtr = fopen("report.txt", "w");
             temp = headPtr;
 
