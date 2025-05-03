@@ -1,13 +1,28 @@
+Chasis number: 6
+Make: pop
+Model: f
+Year: 1
+Cost: 2.00
+Value: 3.00
+Mileage: 4
+Next service: 5
+Owner: pop
+Owner email: e
+Breakdowns: Never: 100.00
+Breakdowns: Less than 3 times: 0.00
+Breakdowns: Less than 5 times: 0.00
+Breakdowns: More than 5 times: 0.00
+----------------------------------------------
 Chasis number: 1
 Make: Ford
 Model: F150
 Year: 2017
-Cost: 90.00
-Value: 100.00
-Mileage: 120
-Next service: 3
-Owner: John
-Owner email: Johnas
+Cost: 9.00
+Value: 7.00
+Mileage: 5
+Next service: 4
+Owner: Pop
+Owner email: POp
 Breakdowns: Never: 100.00
 Breakdowns: Less than 3 times: 0.00
 Breakdowns: Less than 5 times: 0.00

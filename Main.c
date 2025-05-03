@@ -165,6 +165,56 @@ void displayMachine(machineT* machine)
     }
     printf("----------------------------------------------\n");
 }
+//This is a function to copy a linked list as I found out option 8 was destroying the original list
+machineT* copyList(machineT* originalHead) {
+    machineT* newHead = NULL; 
+    machineT* tail = NULL; 
+
+    machineT* currentOriginal = originalHead; // Pointer to traverse the original list
+
+    while (currentOriginal != NULL) {
+        
+        machineT* newNode = (machineT*)malloc(sizeof(machineT));
+        if (newNode == NULL) {
+            // Memory allocation failed during copy
+            printf("Memory allocation failed during list copy!\n");
+            return NULL; // Ruh Roh
+        }
+
+        
+        
+        strcpy(newNode->chasisnumber, currentOriginal->chasisnumber);
+        strcpy(newNode->make, currentOriginal->make);
+        strcpy(newNode->model, currentOriginal->model);
+        newNode->year = currentOriginal->year;
+        newNode->cost = currentOriginal->cost;
+        newNode->value = currentOriginal->value; // Copy the value
+        newNode->mileage = currentOriginal->mileage;
+        newNode->nextservice = currentOriginal->nextservice;
+        strcpy(newNode->owner, currentOriginal->owner);
+        strcpy(newNode->owneremail, currentOriginal->owneremail);
+        newNode->type = currentOriginal->type;
+        newNode->breakdowns = currentOriginal->breakdowns;
+
+        newNode->NEXT = NULL; 
+
+        
+        if (newHead == NULL) {
+            // The new list is currently empty, this is the first node
+            newHead = newNode;
+            tail = newNode; 
+        }
+        else {
+            // The new list is not empty, append the new node to the tail
+            tail->NEXT = newNode;
+            tail = newNode; 
+        }
+
+       
+        currentOriginal = currentOriginal->NEXT;
+    }
+    return newHead; 
+}
 
 
 // Function to generate statistics
@@ -600,8 +650,9 @@ int main()
 		else if (menuOption == 8) 
 		{
 			printf("Sorting machines by value...\n");
-            temp = headPtr;
+            temp = copyList(headPtr);
 			machineT* sortedList = NULL;
+			machineT* originalList = headPtr;
 			int leastvaluable = 0;
             int round = 1;
 			// Loop to sort the machines by value 
